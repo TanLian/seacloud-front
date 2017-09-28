@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import SayHi from '@/components/SayHi'
+import Login from '@/components/Login'
 
 Vue.use(Router)
 
@@ -16,6 +17,11 @@ export default new Router({
       path: '/say_hi',
       name: 'SayHi',
       component: SayHi
+    },
+    {
+      path: '/accounts/login/',
+      name: 'Login',
+      component: Login
     }
   ]
 })

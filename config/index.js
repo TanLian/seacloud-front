@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {        // 1. 对于所有以  "/api"　开头的url 做处理．
-        target: 'http://192.168.3.11',   // 3. 转发到 siwei.me 上．
+        target: 'http://127.0.0.1',   // 3. 转发到 siwei.me 上．
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''  // 2. 把url中的　"/api" 去掉．
