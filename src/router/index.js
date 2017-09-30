@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import SayHi from '@/components/SayHi'
 import Login from '@/components/Login'
+import BaseLeft from '@/components/BaseLeft'
 
 Vue.use(Router)
 
@@ -22,6 +23,11 @@ export default new Router({
       path: '/accounts/login/',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/base/left/',
+      name: 'BaseLeft',
+      component: BaseLeft
     }
   ]
 })

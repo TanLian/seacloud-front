@@ -9,7 +9,7 @@
     </el-form-item>
     <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>
     <el-form-item style="width:100%;">
-      <el-button type="primary" style="width:100%;">登录</el-button>
+      <el-button type="primary" style="width:100%;" @click.native.prevent="userLogin">登录</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -22,8 +22,21 @@
         formLabelAlign: {
           username: '',
           password: ''
-        }
+        },
+        checked: false
       }
+    },
+    methods: {
+      userLogin () {
+        console.log(this.formLabelAlign.username)
+        console.log(this.formLabelAlign.password)
+        let params = {username:this.formLabelAlign.username, password:this.formLabelAlign.password} 
+        this.$http.post('api/user/login', params).then((response) => {
+          console.info(response.body)
+        }, (response) => {
+          console.error(response)
+        })
+      } 
     }
   }
 </script>
