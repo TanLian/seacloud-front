@@ -4,6 +4,7 @@ import Hello from '@/components/Hello'
 import SayHi from '@/components/SayHi'
 import Login from '@/components/Login'
 import BaseLeft from '@/components/BaseLeft'
+import LocalFiles from '@/components/LocalFiles'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/base/left/',
       name: 'BaseLeft',
       component: BaseLeft
+    },
+    {
+      path: '/apps/files',
+      name: 'LocalFiles',
+      component: LocalFiles
     }
   ]
 })
