@@ -8,6 +8,15 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import 'font-awesome/css/font-awesome.css'
 
+import SvgIcon from './components/svg-icon.vue'
+import FontIcon from './components/font-icon.vue'
+
+import '@/css/iconfont/iconfont.css'
+import '@/css/iconfont/iconfont.js'
+
+Vue.component('SvgIcon', SvgIcon)
+Vue.component('FontIcon', FontIcon)
+
 Vue.use(ElementUI)
 
 Vue.prototype.$http = axios
