@@ -11,6 +11,8 @@ import 'font-awesome/css/font-awesome.css'
 import SvgIcon from './components/svg-icon.vue'
 import FontIcon from './components/font-icon.vue'
 
+import api from './api/index.js'
+
 import '@/css/iconfont/iconfont.css'
 import '@/css/iconfont/iconfont.js'
 
@@ -20,6 +22,7 @@ Vue.component('FontIcon', FontIcon)
 Vue.use(ElementUI)
 
 Vue.prototype.$http = axios
+Vue.prototype.$api = api
 
 Vue.config.productionTip = false
 

@@ -97,6 +97,15 @@
         </el-table>
       </div>
     </div>
+    <el-dialog title="重命名文件" size="tiny" :visible.sync="renameFormVisible">
+      <el-form :model="renameForm">
+        <p>重命名<b>{{renameForm.name}}</b>为：</p>
+        <el-input v-model="newFileName" auto-complete="off"></el-input>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary"  @click.native="renameFileSubmit(renameForm.name)">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -107,9 +116,14 @@
   export default {
     data() {
       return {
-        currentPath: "/",
+        currentPath: this.$route.query.p ? this.$route.query.p : '/',
         filelist: [],
-        uploadAction: ""
+        uploadAction: "",
+        renameFormVisible: false,
+        renameForm: {
+          name: ''
+        },
+        newFileName: ''
       }
     },
     mixins: [Common],
@@ -117,9 +131,14 @@
       handleCommand(command, a) {
         console.log(command)
         let data = this.$refs.rename.$attrs.row
+        console.log(data.name)
         switch (command) {
           case 'rename':
               console.log(data)
+              let obj = {'name':data.name}
+              this.renameFormVisible = true
+              this.renameForm = obj
+              this.newFileName = data.name
             break
           case 'move':
               console.log(data)
@@ -131,9 +150,13 @@
             break
         }
       },
-      handleRename(index, row) {
-        console.log(index)
-        console.log(row)
+      renameFileSubmit(oldName) {
+        let renameParams = {'parent_dir':this.currentPath, 'old_name':oldName, 'new_name':this.newFileName}
+        this.$api.post('/api/file/rename', renameParams, r => {
+          this.renameFormVisible = false
+          console.log(r)
+          this.refreshFileList()
+        })
       },
       handleShare(index, row) {
         console.log(index)
@@ -225,26 +248,29 @@
       handleDelete(index, row) {
         console.log(row)
         this.deleteConfirm(index, row)
+      },
+      showFileList() {
+        let dir_path = this.currentPath
+        let params = {"path":dir_path}
+        this.$api.get('/api/files', params, response => {
+          let files = response.files
+          for (let index = 0; index < files.length; index++) {
+            let obj = {}
+            obj['name'] = files[index]['Name']
+            obj['size'] = this.formatSize(files[index]['Size'])
+            obj['mtime'] = files[index]['MtimeRelative']
+            obj['type'] = files[index]['Type']
+            this.filelist.push(obj)
+          }
+        })
+      },
+      refreshFileList() {
+        this.filelist = []
+        this.showFileList()
       }
     },
     mounted() {
-      let dir_path = this.$route.query.p ? this.$route.query.p : '/'
-      let that = this
-
-      this.$http.get('api/api/files', {params:{"path":dir_path}}).then((response) => {
-        let data = response.data
-        let files = data.files
-        for (let index = 0; index < files.length; index++) {
-          let obj = {}
-          obj['name'] = files[index]['Name']
-          obj['size'] = that.formatSize(files[index]['Size'])
-          obj['mtime'] = files[index]['MtimeRelative']
-          obj['type'] = files[index]['Type']
-          this.filelist.push(obj)
-        }
-      }, (response) => {
-        console.error(response)
-      })
+      this.showFileList()
     },
     components: {
       BaseLeft
