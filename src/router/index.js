@@ -38,11 +38,11 @@ export default new Router({
     {
       path: '/',
       component: Home,
-      name: '',
+      name: 'Home',
       iconCls: 'fa fa-home fa-fw',
       leaf: true, // 只有一个节点
       children: [
-          { path: '/apps/files', component: LocalFiles, name: '我的文件' }
+          { path: '/apps/files', component: LocalFiles, name: 'MyFile' }
       ]}
   ]
 })

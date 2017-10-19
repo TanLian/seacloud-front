@@ -3,7 +3,8 @@
       <el-row type="flex" class="row-bg" justify="start" style="margin-bottom:10px;border-bottom:1px solid #e5e5e5;height:60px;">
         <el-col :span="6" class="toolbar" style="padding-bottom: 0px; padding-top:5px;">
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{name: 'MyFile', query:{p: '/'} }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item v-for="item in dirArr" :to="{name: 'MyFile', query:{p: item.to} }" :key="item.to">{{item.name}}</el-breadcrumb-item>
           </el-breadcrumb>
         </el-col>
         <el-col :span="6" class="toolbar" style="">
@@ -30,18 +31,14 @@
           style="width: 100%">
           <el-table-column
             type="selection"
-            width="55">
+            width="35">
           </el-table-column>
-          <el-table-column label="" width="50">
+          <el-table-column label="名称" width="180" align="left">
             <template scope="scope">
               <svg-icon :id="scope.row.type=='dir'?'icon-wenjianjia':'icon-wenjian'" class="new-file"></svg-icon>
+              <router-link v-if="scope.row.type=='dir'" :to="{name: 'MyFile', query:{p: currentPath + '/' + scope.row.name} }">{{scope.row.name}}</router-link>
+              <span v-else>{{scope.row.name}}</span>
             </template>
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="名称"
-            sortable
-            width="360">
           </el-table-column>
           <el-table-column
             prop="size"
@@ -112,7 +109,8 @@
         renameForm: {
           name: ''
         },
-        newFileName: ''
+        newFileName: '',
+        dirArr: [],
       }
     },
     mixins: [Common],
@@ -256,10 +254,34 @@
       refreshFileList() {
         this.filelist = []
         this.showFileList()
+      },
+      updateDirArr() {
+        this.dirArr = []
+        let pArr = this.currentPath.split('/')
+        //去掉空白字符
+        pArr = pArr.filter(function(item){
+          return item != ''
+        })
+        let tmpDir = ''
+        for (let i = 0; i < pArr.length; i++) {
+          tmpDir += '/' + pArr[i]
+          let item = {}
+          item['name'] = pArr[i]
+          item['to'] = tmpDir
+          this.dirArr.push(item)
+        }
       }
     },
     mounted() {
       this.showFileList()
+      this.updateDirArr()
+    },
+    beforeRouteUpdate (to, from, next) {
+      let parent_dir = to.query.p
+      this.currentPath = parent_dir
+      this.updateDirArr()
+      this.refreshFileList()
+      next()
     },
     components: {
     }
