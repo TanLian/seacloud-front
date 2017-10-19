@@ -1,6 +1,5 @@
 <template>
   <div class="main">
-    <base-left></base-left>
     <div class="right-panel">
       <div class="right-top">
         <div class="path-block">
@@ -9,10 +8,10 @@
           </el-breadcrumb>
         </div>
         <div class="ops-block">
-            <el-button type="primary">
+            <!--<el-button type="primary">
               <input type="file" name="file" multiple @change="changeFile($event)">
               上传<i class="el-icon-upload el-icon--right"></i>
-            </el-button>
+            </el-button>-->
             <!--<div class="upload-file-btn">
               <span>上传</span>
               <i class="el-icon-upload el-icon--right"></i>
@@ -110,7 +109,6 @@
 </template>
 
 <script>
-  import BaseLeft from '@/components/BaseLeft'
   import Common from '@/mixin/common.js'
 
   export default {
@@ -273,16 +271,12 @@
       this.showFileList()
     },
     components: {
-      BaseLeft
     }
   }
 </script>
 
 <style lang="scss" scoped>
   .right-panel {
-    position: fixed;
-    left: 60px;
-    top: 0;
     width: 100%;
     height: 100%;
     .right-top {
