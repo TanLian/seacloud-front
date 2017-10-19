@@ -1,34 +1,27 @@
 <template>
-  <div class="main">
-    <div class="right-panel">
-      <div class="right-top">
-        <div class="path-block">
+  <section>
+      <el-row type="flex" class="row-bg" justify="start" style="margin-bottom:10px;border-bottom:1px solid #e5e5e5;height:60px;">
+        <el-col :span="6" class="toolbar" style="padding-bottom: 0px; padding-top:5px;">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
           </el-breadcrumb>
-        </div>
-        <div class="ops-block">
-            <!--<el-button type="primary">
-              <input type="file" name="file" multiple @change="changeFile($event)">
-              上传<i class="el-icon-upload el-icon--right"></i>
-            </el-button>-->
-            <!--<div class="upload-file-btn">
-              <span>上传</span>
-              <i class="el-icon-upload el-icon--right"></i>
-              <input type="file" name="file" multiple @change="changeFile($event)">
-            </div>-->
-            <el-dropdown class="new-btn">
-              <el-button type="text">
-                新建<i class="el-icon-caret-bottom el-icon--right"></i>
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item><svg-icon id="icon-wenjian1" class="new-file"></svg-icon><label>新建文件</label></el-dropdown-item>
-                <el-dropdown-item><svg-icon id="icon-muluwenjianjia" class="new-file"></svg-icon><label>新建目录</label></el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+        </el-col>
+        <el-col :span="6" class="toolbar" style="">
+          <div class="upload-file-btn">
+            <div class="upload-div">上传<i class="el-icon-upload el-icon--right"></i></div>
+            <input type="file" class="upload-input" name="file" multiple @change="changeFile($event)">
           </div>
-      </div>
-      <div class="right-main">
+          <el-dropdown class="new-btn">
+            <el-button type="text">
+              新建<i class="el-icon-caret-bottom el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item><svg-icon id="icon-wenjian1" class="new-file"></svg-icon><label>新建文件</label></el-dropdown-item>
+              <el-dropdown-item><svg-icon id="icon-muluwenjianjia" class="new-file"></svg-icon><label>新建目录</label></el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-col>
+      </el-row>
         <el-table
           ref="multipleTable"
           :data="filelist"
@@ -41,7 +34,7 @@
           </el-table-column>
           <el-table-column label="" width="50">
             <template scope="scope">
-              <svg-icon id="icon-wenjianjia" class="new-file"></svg-icon>
+              <svg-icon :id="scope.row.type=='dir'?'icon-wenjianjia':'icon-wenjian'" class="new-file"></svg-icon>
             </template>
           </el-table-column>
           <el-table-column
@@ -94,8 +87,6 @@
             </template>
           </el-table-column>
         </el-table>
-      </div>
-    </div>
     <el-dialog title="重命名文件" size="tiny" :visible.sync="renameFormVisible">
       <el-form :model="renameForm">
         <p>重命名<b>{{renameForm.name}}</b>为：</p>
@@ -105,7 +96,7 @@
         <el-button type="primary"  @click.native="renameFileSubmit(renameForm.name)">确 定</el-button>
       </div>
     </el-dialog>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -276,43 +267,31 @@
 </script>
 
 <style lang="scss" scoped>
-  .right-panel {
-    width: 100%;
-    height: 100%;
-    .right-top {
-      width: 100%;
-      height: 60px;
-      //background-color: #ccc;
-      overflow: hidden;
-      position: relative;
-      .path-block {
-        height: 100%;
-        line-height: 60px;
-        margin-right: 10px;
-        float: left;
-        padding-top: 25px;
-        a {
-          cursor: pointer;
-          font-weight: bold;
-          color: #555;
-        }
-      }
-      .ops-block {
-        height: 100%;
-        line-height: 60px;
-        float: left;
-        margin-left: 20px;
-      }
+  .upload-file-btn {
+    position: relative;
+    display: inline-block;
+    .upload-div {
+        width: 100px;
+        height: 36px;
+        background: #2178fc;
+        color: #fff;
+        text-align: center;
+        line-height: 36px;
     }
-    .right-main {
-      background-color: #ccc;
-      position: relative;
-      top: 20px;
-      width: 100%;
+    .upload-input {
+      width: 200px;/*因为file-input在部分浏览器中会自带一个输入框，需要双击才可以点击上传,放大后将其定位到div外面就好啦*/
+        height: 36px;
+        position: absolute;
+        left: -100px;
+        top: 0;
+        z-index:1;
+        -moz-opacity: 0;
+        -ms-opacity: 0;
+        -webkit-opacity: 0;
+        opacity: 0;  /*css属性——opcity不透明度，取值0-1*/
+        filter: alpha(opacity=0); /*兼容IE8及以下--filter属性是IE特有的，它还有很多其它滤镜效果，而filter: alpha(opacity=0); 兼容IE8及以下的IE浏览器(如果你的电脑IE是8以下的版本，使用某些效果是可能会有一个允许ActiveX的提示,注意点一下就ok啦)*/
+        cursor: pointer;
     }
-  }
-  .new-btn {
-    margin-left: 15px;
   }
   .new-file {
     width: 16px;
