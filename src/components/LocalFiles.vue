@@ -12,13 +12,13 @@
             <div class="upload-div">上传<i class="el-icon-upload el-icon--right"></i></div>
             <input type="file" class="upload-input" name="file" multiple @change="changeFile($event)">
           </div>
-          <el-dropdown class="new-btn">
+          <el-dropdown class="new-btn" @command="handleNew">
             <el-button type="text">
               新建<i class="el-icon-caret-bottom el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item><svg-icon id="icon-wenjian1" class="new-file"></svg-icon><label>新建文件</label></el-dropdown-item>
-              <el-dropdown-item><svg-icon id="icon-muluwenjianjia" class="new-file"></svg-icon><label>新建目录</label></el-dropdown-item>
+              <el-dropdown-item command="new-file"><svg-icon id="icon-wenjian1" class="new-file"></svg-icon><label>新建文件</label></el-dropdown-item>
+              <el-dropdown-item command="new-dir"><svg-icon id="icon-muluwenjianjia" class="new-file"></svg-icon><label>新建目录</label></el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
@@ -115,6 +115,51 @@
     },
     mixins: [Common],
     methods: {
+      handleNew(command) {
+        console.log(command)
+        switch (command) {
+          case 'new-file':
+            this.newFile()
+            break;
+          case 'new-dir':
+            this.newDir()
+            break
+          default:
+            break
+        }
+      },
+      newFile() {
+        this.$prompt('请输入文件名称', '新建文件', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          //inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+          //inputErrorMessage: '邮箱格式不正确'
+        }).then(({ value }) => {
+          console.log(value)
+          let renameParams = {'parent_dir':this.currentPath, 'name':value}
+          this.$api.post('/api/file/new', renameParams, r => {
+            //this.renameFormVisible = false
+            console.log(r)
+            this.refreshFileList()
+          })
+        }).catch(() => {});
+      },
+      newDir() {
+        this.$prompt('请输入目录名称', '新建目录', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          //inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+          //inputErrorMessage: '邮箱格式不正确'
+        }).then(({ value }) => {
+          console.log(value)
+          let renameParams = {'parent_dir':this.currentPath, 'name':value}
+          this.$api.post('/api/dir/new', renameParams, r => {
+            //this.renameFormVisible = false
+            console.log(r)
+            this.refreshFileList()
+          })
+        }).catch(() => {});
+      },
       handleCommand(command, a) {
         console.log(command)
         let data = this.$refs.rename.$attrs.row
@@ -215,7 +260,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.$http.get('api/api/file/delete', {params:{"p":this.currentPath + filename}}).then((response) => {
+          this.$http.get('api/api/file/delete', {params:{"p":this.currentPath + '/' + filename}}).then((response) => {
             console.log(response)
             this.filelist = this.filelist.filter(function(i){ return i.name != filename })
             this.$message({
