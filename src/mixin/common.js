@@ -11,6 +11,9 @@ export default {
         return (size / 1024).toFixed(2) + ' KB'
       }
       return size.toString() + ' B'
+    },
+    getSuffix: function (filename) {
+      return filename.substring(filename.lastIndexOf('.'), filename.length)
     }
   }
 }

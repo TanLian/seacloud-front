@@ -37,7 +37,7 @@
             <template scope="scope">
               <svg-icon :id="scope.row.type=='dir'?'icon-wenjianjia':'icon-wenjian'" class="new-file"></svg-icon>
               <router-link v-if="scope.row.type=='dir'" :to="{name: 'MyFile', query:{p: currentPath + '/' + scope.row.name} }">{{scope.row.name}}</router-link>
-              <span v-else>{{scope.row.name}}</span>
+              <a v-else href="#" @click.prevent="handleClickFile(scope.$index,scope.row)">{{scope.row.name}}</a>
             </template>
           </el-table-column>
           <el-table-column
@@ -98,6 +98,7 @@
 
 <script>
   import Common from '@/mixin/common.js'
+  import { codemirror } from 'vue-codemirror-lite'
 
   export default {
     data() {
@@ -111,10 +112,30 @@
         },
         newFileName: '',
         dirArr: [],
+        code: 'const str = "hello world"'
       }
     },
     mixins: [Common],
     methods: {
+      handleClickFile(index, row) {
+        let filename = row.name
+        console.log(filename)
+        let suffix = this.getSuffix(filename)
+        console.log(suffix)
+        switch (suffix) {
+          case '.pdf':
+            this.$router.push({name: 'PdfViewer', query: {dir: this.currentPath, file:filename}})
+            break
+          case '.mp4':
+            this.$router.push({name: 'VideoViewer', query: {dir: this.currentPath, file:filename}})
+            break
+          case '.txt':
+            this.$router.push({name: 'TextViewer', query: {dir: this.currentPath, file:filename}})
+            break
+          default:
+            break
+        }
+      },
       handleNew(command) {
         console.log(command)
         switch (command) {
@@ -329,6 +350,7 @@
       next()
     },
     components: {
+      codemirror
     }
   }
 </script>

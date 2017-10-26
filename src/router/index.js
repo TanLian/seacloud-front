@@ -6,6 +6,9 @@ import Login from '@/components/Login'
 import BaseLeft from '@/components/BaseLeft'
 import LocalFiles from '@/components/LocalFiles'
 import Home from '@/components/Home'
+import PdfViewer from '@/components/viewer/PdfViewer'
+import VideoViewer from '@/components/viewer/VideoViewer'
+import TextViewer from '@/components/viewer/TextViewer'
 
 Vue.use(Router)
 
@@ -33,6 +36,24 @@ export default new Router({
       path: '/base/left/',
       name: 'BaseLeft',
       component: BaseLeft,
+      hidden: true
+    },
+    {
+      path: '/view/pdf/',
+      name: 'PdfViewer',
+      component: PdfViewer,
+      hidden: true
+    },
+    {
+      path: '/view/video/',
+      name: 'VideoViewer',
+      component: VideoViewer,
+      hidden: true
+    },
+    {
+      path: '/view/text/',
+      name: 'TextViewer',
+      component: TextViewer,
       hidden: true
     },
     {
