@@ -6,6 +6,7 @@ import Login from '@/components/Login'
 import BaseLeft from '@/components/BaseLeft'
 import LocalFiles from '@/components/LocalFiles'
 import Home from '@/components/Home'
+import Trash from '@/components/Trash'
 import PdfViewer from '@/components/viewer/PdfViewer'
 import VideoViewer from '@/components/viewer/VideoViewer'
 import TextViewer from '@/components/viewer/TextViewer'
@@ -64,6 +65,16 @@ export default new Router({
       leaf: true, // 只有一个节点
       children: [
           { path: '/apps/files', component: LocalFiles, name: 'MyFile' }
+      ]
+    },
+    {
+      path: '/',
+      component: Home,
+      name: 'Home',
+      iconCls: 'fa fa-trash-o fa-fw',
+      leaf: true, // 只有一个节点
+      children: [
+            { path: '/apps/files/trash', component: Trash, name: 'Trash' }
       ]}
   ]
 })
