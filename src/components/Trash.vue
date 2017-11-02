@@ -9,7 +9,7 @@
         </el-col>
         <el-col :span="6" class="toolbar" style="">
           <el-button :disabled="delete_btn_disabled">删除</el-button>
-          <el-button type="primary" round>清空</el-button>
+          <el-button type="primary" @click="clear_trash" round>清空</el-button>
         </el-col>
       </el-row>
     <el-table
@@ -87,29 +87,46 @@ export default {
         }
       })
     },
-      updateDirArr() {
-        this.dirArr = []
-        let pArr = this.currentPath.split('/')
-        //去掉空白字符
-        pArr = pArr.filter(function(item){
-          return item != ''
-        })
-        if (pArr.length > 0) {
-          let item0 = {}
-          item0['name'] = pArr[0].substring(0, pArr[0].lastIndexOf('.'))
-          item0['to'] = '/' + pArr[0] + '/'
-          this.dirArr.push(item0)
-          let tmpDir = '/' + pArr[0] + '/'
-          for (let i = 1; i < pArr.length; i++) {
-            tmpDir += pArr[i] + '/'
-            let item = {}
-            item['name'] = pArr[i]
-            item['to'] = tmpDir
-            this.dirArr.push(item)
-          }
+    updateDirArr() {
+      this.dirArr = []
+      let pArr = this.currentPath.split('/')
+      //去掉空白字符
+      pArr = pArr.filter(function(item){
+        return item != ''
+      })
+      if (pArr.length > 0) {
+        let item0 = {}
+        item0['name'] = pArr[0].substring(0, pArr[0].lastIndexOf('.'))
+        item0['to'] = '/' + pArr[0] + '/'
+        this.dirArr.push(item0)
+        let tmpDir = '/' + pArr[0] + '/'
+        for (let i = 1; i < pArr.length; i++) {
+          tmpDir += pArr[i] + '/'
+          let item = {}
+          item['name'] = pArr[i]
+          item['to'] = tmpDir
+          this.dirArr.push(item)
         }
-        
       }
+    },
+    clear_trash_files() {
+      this.$api.delete('/api/files/trash/clear', {}, r => {
+        this.currentPath = '/'
+        this.filelist = []
+        this.showTrashFiles()
+        this.updateDirArr()
+      })
+    },
+    clear_trash() {
+      this.$confirm('此操作将永久清空回收站 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.clear_trash_files()
+      }).catch(() => {        
+      });
+    }
   },
   mounted () {
     this.currentPath = this.$route.query.p ? this.$route.query.p : '/',
