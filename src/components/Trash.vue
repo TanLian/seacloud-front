@@ -48,6 +48,9 @@
               <a href="#" @click.prevent="handleDelete(scope.$index, scope.row)">
                 <i class="fa fa-trash-o fa-lg"></i>
               </a>
+              <a href="#" @click.prevent="handleRestore(scope.$index, scope.row)">
+                <svg-icon id="icon-restore" class="new-file"></svg-icon>
+              </a>
             </template>
           </el-table-column>
         </el-table>
@@ -71,6 +74,15 @@ export default {
       console.log('delete file')
       console.log(index)
       console.log(row)
+    },
+    handleRestore(index, row) {
+      let params = {'parent_dir':this.currentPath, 'name':row.name, 'id':row.id}
+      this.$api.post('/api/files/trash/restore', params, r => {
+        this.currentPath = '/'
+        this.filelist = []
+        this.showTrashFiles()
+        this.updateDirArr()
+      })
     },
     showTrashFiles() {
       let params = {"path":this.currentPath}
