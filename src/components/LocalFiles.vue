@@ -67,7 +67,7 @@
                   <i class="el-icon-caret-bottom el-icon--right"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="rename" :row="scope.row" ref="rename">
+                    <el-dropdown-item command="rename" :filename="scope.row.name">
                       <i class="fa fa-pencil"></i>
                       <span style="margin-left:8px;">重命名</span>
                     </el-dropdown-item>
@@ -181,23 +181,20 @@
           })
         }).catch(() => {});
       },
-      handleCommand(command, a) {
+      handleCommand(command, comp) {
         console.log(command)
-        let data = this.$refs.rename.$attrs.row
-        console.log(data.name)
+        let filename = comp.$attrs.filename
+        console.log(filename)
         switch (command) {
           case 'rename':
-              console.log(data)
-              let obj = {'name':data.name}
+              let obj = {'name':filename}
               this.renameFormVisible = true
               this.renameForm = obj
-              this.newFileName = data.name
+              this.newFileName = filename
             break
           case 'move':
-              console.log(data)
             break
           case 'copy':
-              console.log(data)
             break
           default:
             break
