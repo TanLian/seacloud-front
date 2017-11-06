@@ -36,7 +36,7 @@
           <el-table-column label="名称" width="180" align="left">
             <template scope="scope">
               <svg-icon :id="scope.row.type=='dir'?'icon-wenjianjia':'icon-wenjian'" class="new-file"></svg-icon>
-              <router-link v-if="scope.row.type=='dir'" :to="{name: 'MyFile', query:{p: currentPath + '/' + scope.row.name} }">{{scope.row.name}}</router-link>
+              <router-link v-if="scope.row.type=='dir'" :to="{name: 'MyFile', query:{p: currentPath + scope.row.name + '/'} }">{{scope.row.name}}</router-link>
               <a v-else href="#" @click.prevent="handleClickFile(scope.$index,scope.row)">{{scope.row.name}}</a>
             </template>
           </el-table-column>
@@ -327,7 +327,7 @@
         })
         let tmpDir = ''
         for (let i = 0; i < pArr.length; i++) {
-          tmpDir += '/' + pArr[i]
+          tmpDir += pArr[i] + '/'
           let item = {}
           item['name'] = pArr[i]
           item['to'] = tmpDir
