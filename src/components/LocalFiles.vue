@@ -61,7 +61,10 @@
               <a href="#" @click.prevent="handleDelete(scope.$index, scope.row)">
                 <i class="fa fa-trash-o fa-lg"></i>
               </a>
-              <i class="el-icon-star-off"></i>
+              <a href="#" @click.prevent="handleStar(scope.$index, scope.row)">
+                <!--<i class="el-icon-star-off"></i>-->
+                <i :class="scope.row.starred ? 'fa fa-star fa-lg' : 'fa fa-star-o fa-lg'"></i>
+              </a>
               <el-dropdown trigger="click" @command="handleCommand">
                 <span class="el-dropdown-link">
                   <i class="el-icon-caret-bottom el-icon--right"></i>
@@ -240,6 +243,7 @@
               obj['size'] = this.formatSize(files[index]['Size'])
               obj['mtime'] = files[index]['MtimeRelative']
               obj['type'] = files[index]['Type']
+              obj['starred'] = files[index]['Starred']
               this.filelist.push(obj)
             }
           }, (response) => {
@@ -310,6 +314,7 @@
             obj['size'] = this.formatSize(files[index]['Size'])
             obj['mtime'] = files[index]['MtimeRelative']
             obj['type'] = files[index]['Type']
+            obj['starred'] = files[index]['Starred']
             this.filelist.push(obj)
           }
         })
@@ -333,6 +338,13 @@
           item['to'] = tmpDir
           this.dirArr.push(item)
         }
+      },
+      handleStar(index, row) {
+        let params = {'parent_dir':this.currentPath, 'name':row.name}
+        this.$api.post('/api/files/favorites/add', params, r => {
+          console.log(r)
+          this.refreshFileList()
+        })
       }
     },
     mounted() {
