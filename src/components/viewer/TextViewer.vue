@@ -1,5 +1,7 @@
 <template>
-<codemirror ref="myEditor" :value="code"></codemirror>
+<div>
+  <codemirror ref="myEditor" :value="code"></codemirror>
+</div>
 </template>
 
 <script>
