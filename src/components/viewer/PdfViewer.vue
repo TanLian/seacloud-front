@@ -1,8 +1,8 @@
 <template>
   <div style="width: 50%">
-    <svg-icon id="icon-prev" class="svg-icon" @click="click"></svg-icon>
+    <el-button @click="prevPage"><svg-icon id="icon-prev" class="svg-icon"></svg-icon></el-button>
     <input v-model.number="page" type="number" style="width: 5em"> /{{numPages}}
-    <svg-icon id="icon-next" class="svg-icon"></svg-icon>
+    <el-button @click="nextPage"><svg-icon id="icon-next" class="svg-icon"></svg-icon></el-button>
     <div v-if="loadedRatio > 0 && loadedRatio < 1" style="background-color: green; color: white; text-align: center" :style="{ width: loadedRatio * 100 + '%' }">{{ Math.floor(loadedRatio * 100) }}%</div>
     <pdf v-show="show" :src="pdfurls" :page="page" @progress="loadedRatio = $event" @error="error" @numPages="numPages = $event"></pdf>
   </div>
@@ -11,7 +11,6 @@
 <script>
 import pdf from 'vue-pdf'
 export default {
-  name: 'hello',
   data () {
     return {
       pdfurls:'',
@@ -22,11 +21,20 @@ export default {
     }
   },
   methods: {
-    error: function(err) {
+    error(err) {
 			console.log(err);
     },
-    click() {
-      console.log('click')
+    prevPage() {
+      if (this.page <= 1) {
+        return
+      }
+      this.page -= 1
+    },
+    nextPage() {
+      if (this.page >= this.numPages) {
+        return
+      }
+      this.page += 1
     }
   },
   components: {

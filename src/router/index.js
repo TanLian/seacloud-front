@@ -72,20 +72,21 @@ export default new Router({
       path: '/',
       component: Home,
       name: 'Home',
-      iconCls: 'fa fa-trash-o fa-fw',
+      iconCls: 'fa fa-star-o fa-fw',
       leaf: true, // 只有一个节点
       children: [
-            { path: '/apps/files/trash', component: Trash, name: 'Trash' }
+            { path: '/apps/files/favorites', component: Favorites, name: 'Favorites' }
       ]
     },
     {
       path: '/',
       component: Home,
       name: 'Home',
-      iconCls: 'fa fa-star-o fa-fw',
+      iconCls: 'fa fa-trash-o fa-fw',
       leaf: true, // 只有一个节点
       children: [
-            { path: '/apps/files/favorites', component: Favorites, name: 'Favorites' }
-      ]}
+            { path: '/apps/files/trash', component: Trash, name: 'Trash' }
+      ]
+    }
   ]
 })
