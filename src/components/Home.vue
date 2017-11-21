@@ -14,7 +14,7 @@
 					<span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>我的消息</el-dropdown-item>
-						<el-dropdown-item>设置</el-dropdown-item>
+						<el-dropdown-item @click.native="setting">设置</el-dropdown-item>
 						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
 					</el-dropdown-menu>
 				</el-dropdown>
@@ -64,6 +64,7 @@
 </template>
 
 <script>
+	import Profile from '@/components/Profile'
 	export default {
 		data() {
 			return {
@@ -108,6 +109,10 @@
 				});
 
 
+			},
+			setting() {
+				console.log('设置页面')
+				this.$router.push({name: 'Profile'})
 			},
 			//折叠导航栏
 			collapse:function(){

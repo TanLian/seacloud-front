@@ -36,15 +36,15 @@ function apiAxios (method, url, params, success, failure) {
     withCredentials: false
   })
   .then(function (res) {
-    if (res.data.success === true) {
-      if (success) {
-        success(res.data)
-      }
-    } else {
+    if (res.data.error) {
       if (failure) {
         failure(res.data)
       } else {
         window.alert('error: ' + JSON.stringify(res.data))
+      }
+    } else {
+      if (success) {
+        success(res.data)
       }
     }
   })
