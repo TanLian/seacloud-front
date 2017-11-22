@@ -123,11 +123,16 @@
 			},
 			showMenu(i,status){
 				this.$refs.menuCollapsed.getElementsByClassName('submenu-hook-'+i)[0].style.display=status?'block':'none'
-			}
+			},
+			getAvatar() {
+        this.$api.get('/api/avatar/get', {}, response => {
+          this.sysUserAvatar = "data:image/png;base64," + response.data
+        })
+      }
 		},
 		mounted() {
 			this.sysUserName = 'root'
-			this.sysUserAvatar = ''
+			this.getAvatar()
 
 		}
 	}
