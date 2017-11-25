@@ -11,6 +11,10 @@
           <i class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
+      <el-form-item label="密码" style="text-align:left">
+        <label>******</label>
+        <a href="#" @click.prevent="changePWFormVisible=true">修改</a>
+      </el-form-item>
       <el-form-item label="个性签名">
         <el-input
           type="textarea"
@@ -41,6 +45,24 @@
         <el-button type="primary" @click="onSubmit">保存</el-button>
       </el-form-item>
     </el-form>
+
+    <el-dialog title="修改密码" :visible.sync="changePWFormVisible">
+      <el-form :model="changePWForm">
+        <el-form-item :label-width="formLabelWidth">
+          <el-input type="password" v-model="changePWForm.current_pw" auto-complete="off" placeholder="请输入当前密码"></el-input>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth">
+          <el-input type="password" v-model="changePWForm.new_pw" auto-complete="off" placeholder="请输入新密码"></el-input>
+        </el-form-item>
+        <el-form-item :label-width="formLabelWidth">
+          <el-input type="password" v-model="changePWForm.confirm_new_pw" auto-complete="off" placeholder="请再次输入新密码"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="changePWFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitChangePw">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -54,7 +76,14 @@
           depart: '',
           tele: ''
         },
-        imageUrl: ''
+        imageUrl: '',
+        changePWFormVisible: false,
+        formLabelWidth: '60px',
+        changePWForm: {
+          current_pw: '',
+          new_pw: '',
+          confirm_new_pw: ''
+        }
       }
     },
     methods: {
@@ -86,6 +115,21 @@
           this.$message.error('上传头像图片大小不能超过 2MB!');
         }
         return isJPG && isLt2M;
+      },
+      submitChangePw() {
+        if (this.changePWForm.new_pw !== this.changePWForm.confirm_new_pw) {
+          console.log('两次密码不一致')
+          return
+        }
+        let changepwParams = {
+          'password':this.changePWForm.current_pw, 
+          'new_password':this.changePWForm.new_pw,
+          'confirm_password':this.changePWForm.confirm_new_pw
+        }
+        this.$api.post('/api/user/changepw', changepwParams, r => {
+          //this.renameFormVisible = false
+          console.log(r)
+        })
       }
     },
     mounted () {
