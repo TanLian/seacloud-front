@@ -317,6 +317,10 @@
             obj['starred'] = files[index]['Starred']
             this.filelist.push(obj)
           }
+        }, response => {
+          if (response.error === "not login") {
+            this.$router.push({name: 'Login'})
+          }
         })
       },
       refreshFileList() {

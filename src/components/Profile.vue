@@ -47,20 +47,20 @@
     </el-form>
 
     <el-dialog title="修改密码" :visible.sync="changePWFormVisible">
-      <el-form :model="changePWForm">
-        <el-form-item :label-width="formLabelWidth">
+      <el-form status-icon  :rules="rules" ref="ruleForm" :model="changePWForm">
+        <el-form-item :label-width="formLabelWidth" prop="passwd">
           <el-input type="password" v-model="changePWForm.current_pw" auto-complete="off" placeholder="请输入当前密码"></el-input>
         </el-form-item>
-        <el-form-item :label-width="formLabelWidth">
+        <el-form-item :label-width="formLabelWidth" prop="newpasswd">
           <el-input type="password" v-model="changePWForm.new_pw" auto-complete="off" placeholder="请输入新密码"></el-input>
         </el-form-item>
-        <el-form-item :label-width="formLabelWidth">
+        <el-form-item :label-width="formLabelWidth" prop="confirm_newpass">
           <el-input type="password" v-model="changePWForm.confirm_new_pw" auto-complete="off" placeholder="请再次输入新密码"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="changePWFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitChangePw">确 定</el-button>
+        <el-button type="primary" @click="submitChangePw('ruleForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -83,6 +83,22 @@
           current_pw: '',
           new_pw: '',
           confirm_new_pw: ''
+        },
+        ruleForm: {
+          passwd: '',
+          newpasswd: '',
+          confirm_newpass: ''
+        },
+        rules: {
+          passwd : [
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          ],
+          newpasswd : [
+            { required: true, message: '新密码不能为空', trigger: 'blur' }
+          ],
+          confirm_newpass : [
+            { required: true, message: '确认密码不能为空', trigger: 'blur' }
+          ]
         }
       }
     },
@@ -116,20 +132,29 @@
         }
         return isJPG && isLt2M;
       },
-      submitChangePw() {
-        if (this.changePWForm.new_pw !== this.changePWForm.confirm_new_pw) {
-          console.log('两次密码不一致')
-          return
-        }
-        let changepwParams = {
-          'password':this.changePWForm.current_pw, 
-          'new_password':this.changePWForm.new_pw,
-          'confirm_password':this.changePWForm.confirm_new_pw
-        }
-        this.$api.post('/api/user/changepw', changepwParams, r => {
-          //this.renameFormVisible = false
-          console.log(r)
-        })
+      submitChangePw(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            alert('submit!');
+            if (this.changePWForm.new_pw !== this.changePWForm.confirm_new_pw) {
+              console.log('两次密码不一致')
+              return
+            }
+            let changepwParams = {
+              'password':this.changePWForm.current_pw, 
+              'new_password':this.changePWForm.new_pw,
+              'confirm_password':this.changePWForm.confirm_new_pw
+            }
+            this.$api.post('/api/user/changepw', changepwParams, r => {
+              //this.renameFormVisible = false
+              console.log(r)
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+        
       }
     },
     mounted () {

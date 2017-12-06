@@ -94,16 +94,20 @@
 			handleclose() {
 				//console.log('handleclose');
 			},
-			handleselect: function (a, b) {
+			handleselect(a, b) {
+			},
+			logoutRequest() {
+				this.$api.post('/api/user/logout', {}, r => {
+          this.$router.push({name: 'Login'})
+        })
 			},
 			//退出登录
-			logout: function () {
+			logout() {
 				var _this = this;
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
 				}).then(() => {
-					sessionStorage.removeItem('user');
-					_this.$router.push('/login');
+					this.logoutRequest()
 				}).catch(() => {
 
 				});
@@ -115,7 +119,7 @@
 				this.$router.push({name: 'Profile'})
 			},
 			//折叠导航栏
-			collapse:function(){
+			collapse(){
 				this.collapsed=!this.collapsed;
 				if (!this.collapsed) {
 					this.$refs.menuNormal.$el.style.width = "230px"

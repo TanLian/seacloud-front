@@ -28,15 +28,31 @@
     },
     methods: {
       userLogin () {
-        console.log(this.formLabelAlign.username)
-        console.log(this.formLabelAlign.password)
         let params = {username:this.formLabelAlign.username, password:this.formLabelAlign.password} 
-        this.$http.post('api/user/login', params).then((response) => {
-          console.info(response.body)
-        }, (response) => {
-          console.error(response)
+        this.$api.post('/user/login', params, r => {
+          this.$router.push({name: 'MyFile'})
         })
-      } 
+      },
+      getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+        }
+        return "";
+      },
+      alreadyLogin() {
+        let logined = false
+        let params = {token:this.getCookie('Authorization')} 
+        this.$api.post('/api/is_user_login/', params, r => {
+          this.$router.push({name: 'MyFile'})
+        })
+      }
+    },
+    mounted () { 
+      this.alreadyLogin()
     }
   }
 </script>

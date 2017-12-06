@@ -36,6 +36,11 @@ function apiAxios (method, url, params, success, failure) {
     withCredentials: false
   })
   .then(function (res) {
+    if (typeof res.data === 'string') {
+      res.data = res.data.replace(/\'/g,"\"")
+      res.data = JSON.parse(res.data)
+    }
+    
     if (res.data.error) {
       if (failure) {
         failure(res.data)
@@ -51,7 +56,7 @@ function apiAxios (method, url, params, success, failure) {
   .catch(function (err) {
     let res = err.response
     if (err) {
-      window.alert('api error, HTTP CODE: ' + res.status)
+      console.log('api error, HTTP CODE: ' + res.status)
       return
     }
   })
