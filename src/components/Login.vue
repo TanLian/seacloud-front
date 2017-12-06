@@ -1,5 +1,5 @@
 <template>
-  <el-form :label-position="labelPosition" label-width="80px" :model="formLabelAlign" class="demo-ruleForm login-form">
+  <el-form @keyup.enter.native="userLogin" :label-position="labelPosition" label-width="80px" :model="formLabelAlign" class="demo-ruleForm login-form">
     <h3 class="title">用户登录</h3>
     <el-form-item prop="username">
       <el-input v-model="formLabelAlign.username" placeholder="用户名"></el-input>
@@ -7,7 +7,6 @@
     <el-form-item prop="password">
       <el-input type="password" v-model="formLabelAlign.password" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
-    <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>
     <el-form-item style="width:100%;">
       <el-button type="primary" style="width:100%;" @click.native.prevent="userLogin">登录</el-button>
     </el-form-item>
