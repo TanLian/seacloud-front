@@ -12,6 +12,7 @@ import PdfViewer from '@/components/viewer/PdfViewer'
 import VideoViewer from '@/components/viewer/VideoViewer'
 import TextViewer from '@/components/viewer/TextViewer'
 import Profile from '@/components/Profile'
+import Users from '@/components/Users'
 
 Vue.use(Router)
 
@@ -72,7 +73,7 @@ export default new Router({
       iconCls: 'fa fa-home fa-fw',
       leaf: true, // 只有一个节点
       children: [
-          { path: '/apps/files', component: LocalFiles, name: 'MyFile' }
+          { path: '/apps/files', component: LocalFiles, name: '我的文件' }
       ]
     },
     {
@@ -82,7 +83,17 @@ export default new Router({
       iconCls: 'fa fa-star-o fa-fw',
       leaf: true, // 只有一个节点
       children: [
-            { path: '/apps/files/favorites', component: Favorites, name: 'Favorites' }
+            { path: '/apps/files/favorites', component: Favorites, name: '我的收藏' }
+      ]
+    },
+    {
+      path: '/',
+      component: Home,
+      name: '通讯录',
+      iconCls: 'fa fa-users fa-fw',
+      children: [
+            { path: '/apps/users', component: Users, name: '所有用户' },
+            { path: '/apps/files/favorites', component: Favorites, name: '所有群组' }
       ]
     },
     {
@@ -92,7 +103,7 @@ export default new Router({
       iconCls: 'fa fa-trash-o fa-fw',
       leaf: true, // 只有一个节点
       children: [
-            { path: '/apps/files/trash', component: Trash, name: 'Trash' }
+            { path: '/apps/files/trash', component: Trash, name: '回收站' }
       ]
     }
   ]

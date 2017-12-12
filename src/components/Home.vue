@@ -132,10 +132,15 @@
         this.$api.get('/api/avatar/get', {}, response => {
           this.sysUserAvatar = "data:image/png;base64," + response.data
         })
+      },
+			getUserName() {
+        this.$api.get('/api/user/getusername', {}, response => {
+          this.sysUserName = response.username
+        })
       }
 		},
 		mounted() {
-			this.sysUserName = 'root'
+			this.getUserName()
 			this.getAvatar()
 
 		}
