@@ -73,7 +73,7 @@ export default new Router({
       iconCls: 'fa fa-home fa-fw',
       leaf: true, // 只有一个节点
       children: [
-          { path: '/apps/files', component: LocalFiles, name: '我的文件' }
+          { path: '/apps/files', component: LocalFiles, name: 'MyFile', showname: '我的文件' }
       ]
     },
     {
@@ -83,17 +83,18 @@ export default new Router({
       iconCls: 'fa fa-star-o fa-fw',
       leaf: true, // 只有一个节点
       children: [
-            { path: '/apps/files/favorites', component: Favorites, name: '我的收藏' }
+            { path: '/apps/files/favorites', component: Favorites, name: 'MyFavorate', showname: '我的收藏' }
       ]
     },
     {
       path: '/',
       component: Home,
-      name: '通讯录',
+      name: 'Home',
+      showname: '通讯录',
       iconCls: 'fa fa-users fa-fw',
       children: [
-            { path: '/apps/users', component: Users, name: '所有用户' },
-            { path: '/apps/files/favorites', component: Favorites, name: '所有群组' }
+            { path: '/apps/users', component: Users, name: 'AllUsers', showname: '所有用户' },
+            { path: '/apps/files/favorites', component: Favorites, name: 'AllGroups', showname: '所有群组' }
       ]
     },
     {
@@ -103,7 +104,7 @@ export default new Router({
       iconCls: 'fa fa-trash-o fa-fw',
       leaf: true, // 只有一个节点
       children: [
-            { path: '/apps/files/trash', component: Trash, name: '回收站' }
+            { path: '/apps/files/trash', component: Trash, name: 'Trash', showname: '回收站' }
       ]
     }
   ]
