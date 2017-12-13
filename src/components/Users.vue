@@ -23,8 +23,8 @@
             电话：{{ user['tele'] }} <br>
           </div>
           <img :src="user['avatar']" class="avatar">
-          <div>{{ user['username'] }}</div>
         </el-tooltip>
+        <div>{{ user['username'] }}</div>
       </li>
 		</ul>
 
