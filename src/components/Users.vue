@@ -13,6 +13,21 @@
 			</el-form>
 		</el-col>
 
+    <ul class="userlist">
+      <li v-for="user in users" class="user">
+        <el-tooltip placement="top">
+          <div slot="content">
+            格言：{{ user['motto'] }} <br>
+            关于：{{ user['intro'] }} <br>
+            部门：{{ user['depart'] }} <br>
+            电话：{{ user['tele'] }} <br>
+          </div>
+          <img :src="user['avatar']" class="avatar">
+          <div>{{ user['username'] }}</div>
+        </el-tooltip>
+      </li>
+		</ul>
+
     <el-dialog title="新建用户" :visible.sync="newUserFormVisible">
       <el-form status-icon ref="ruleForm" :model="newUserForm">
         <el-form-item prop="username">
@@ -45,7 +60,8 @@ export default {
         username: '',
         password: '',
         is_admin: false
-      }
+      },
+      users: []
     }
   },
   methods: {
@@ -54,7 +70,24 @@ export default {
       params['source'] = 'local'
       this.$api.post('/api/user/add', params, r => {
       })
+    },
+    getAllUsers() {
+      this.$api.get('/api/user/getallusers', {}, r => {
+        for (let user of r.userlist) {
+          let obj = {}
+          obj['username'] = user['UserName']
+          obj['avatar'] = "data:image/png;base64," + user['Avatar']
+          obj['depart'] = user['Depart']
+          obj['intro'] = user['Intro']
+          obj['tele'] = user['Tele']
+          obj['motto'] = user['Motto']
+          this.users.push(obj)
+        }
+      })
     }
+  },
+  mounted () {
+    this.getAllUsers()
   }
 }
 </script>
@@ -68,5 +101,23 @@ export default {
 	.el-form-item {
 		margin-bottom: 10px;
 	}
+}
+
+.userlist {
+  list-style: none;
+
+  .user {
+    width: 140px;
+    height: 90px;
+    margin-top: 20px;
+    display: inline-block;
+    float: left;
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 1000px;
+    }
+  }
 }
 </style>
