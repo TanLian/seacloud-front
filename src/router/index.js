@@ -13,6 +13,7 @@ import VideoViewer from '@/components/viewer/VideoViewer'
 import TextViewer from '@/components/viewer/TextViewer'
 import Profile from '@/components/Profile'
 import Users from '@/components/Users'
+import Groups from '@/components/Groups'
 
 Vue.use(Router)
 
@@ -94,7 +95,7 @@ export default new Router({
       iconCls: 'fa fa-users fa-fw',
       children: [
             { path: '/apps/users', component: Users, name: 'AllUsers', showname: '所有用户' },
-            { path: '/apps/files/favorites', component: Favorites, name: 'AllGroups', showname: '所有群组' }
+            { path: '/apps/groups', component: Groups, name: 'AllGroups', showname: '所有群组' }
       ]
     },
     {
