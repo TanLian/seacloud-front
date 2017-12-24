@@ -11,6 +11,7 @@ import Favorites from '@/components/Favorites'
 import PdfViewer from '@/components/viewer/PdfViewer'
 import VideoViewer from '@/components/viewer/VideoViewer'
 import TextViewer from '@/components/viewer/TextViewer'
+import ImageViewer from '@/components/viewer/ImageViewer'
 import Profile from '@/components/Profile'
 import Users from '@/components/Users'
 import Groups from '@/components/Groups'
@@ -59,6 +60,12 @@ export default new Router({
       path: '/view/text/',
       name: 'TextViewer',
       component: TextViewer,
+      hidden: true
+    },
+    {
+      path: '/view/image/',
+      name: 'ImageViewer',
+      component: ImageViewer,
       hidden: true
     },
     {

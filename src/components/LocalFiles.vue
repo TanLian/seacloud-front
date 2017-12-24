@@ -135,6 +135,12 @@
           case '.txt':
             this.$router.push({name: 'TextViewer', query: {dir: this.currentPath, file:filename}})
             break
+          case '.jpeg':
+          case '.jpg':
+          case '.png':
+          case '.gif':
+            this.$router.push({name: 'ImageViewer', query: {dir: this.currentPath, file:filename}})
+            break
           default:
             break
         }

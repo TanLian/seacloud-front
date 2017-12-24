@@ -8,6 +8,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import 'font-awesome/css/font-awesome.css'
 
+import iView from 'iview'
+import 'iview/dist/styles/iview.css'
+
 import SvgIcon from './components/svg-icon.vue'
 import FontIcon from './components/font-icon.vue'
 
@@ -20,6 +23,7 @@ Vue.component('SvgIcon', SvgIcon)
 Vue.component('FontIcon', FontIcon)
 
 Vue.use(ElementUI)
+Vue.use(iView)
 
 Vue.prototype.$http = axios
 Vue.prototype.$api = api
