@@ -58,6 +58,9 @@
               <a href="#" @click.prevent="handleDownload(scope.$index, scope.row)">
                 <i class="fa fa-download"></i>
               </a>
+              <a href="#" @click.prevent="handleShare(scope.$index, scope.row)">
+                <i class="fa fa-share-alt"></i>
+              </a>
               <a href="#" @click.prevent="handleDelete(scope.$index, scope.row)">
                 <i class="fa fa-trash-o fa-lg"></i>
               </a>
@@ -96,6 +99,26 @@
         <el-button type="primary"  @click.native="renameFileSubmit(renameForm.name)">确 定</el-button>
       </div>
     </el-dialog>
+
+    <Modal
+        v-model="shareModal"
+        :title="shareFileInfo.title">
+        <Collapse v-model="defaultPanel" accordion>
+          <Panel name="download_link">
+              下载链接
+              <p slot="content">
+                <Checkbox v-model="shareFileInfo.shareLinkEnabled" @on-change="dealDownloadLink">分享链接</Checkbox><br>
+                <Input v-show="shareFileInfo.shareLinkEnabled" v-model="shareFileInfo.shareLink" style="width: 300px"></Input><br>
+                <Checkbox v-model="shareFileInfo.shareLinkPasswordEnabled">密码保护</Checkbox><br>
+                <Input type="password" v-show="shareFileInfo.shareLinkPasswordEnabled" v-model="shareFileInfo.shareLinkPassword" style="width: 300px"></Input><br>
+                <Checkbox v-model="shareFileInfo.shareLinkExpiredEnabled">过期日期</Checkbox><br>
+                <DatePicker v-show="shareFileInfo.shareLinkExpiredEnabled" type="date" format="yyyy-MM-dd" v-model="shareFileInfo.shareLinkExpiredDate" placeholder="Select date" style="width: 200px"></DatePicker>
+              </p>
+          </Panel>
+      </Collapse>
+      <div slot="footer">
+      </div>
+    </Modal>
   </section>
 </template>
 
@@ -115,7 +138,19 @@
         },
         newFileName: '',
         dirArr: [],
-        code: 'const str = "hello world"'
+        code: 'const str = "hello world"',
+        shareFileInfo: {
+          title: '分享',
+          shareLinkEnabled: false,
+          shareLinkPasswordEnabled: false,
+          shareLink: '',
+          shareLinkPassword: '',
+          shareLinkExpiredEnabled: false,
+          shareLinkExpiredDate:'',
+          file_type: ''
+        },
+        defaultPanel: 'download_link',
+        shareModal: false
       }
     },
     mixins: [Common],
@@ -220,6 +255,85 @@
       handleShare(index, row) {
         console.log(index)
         console.log(row)
+        this.getDownloadLink(row.name, row.type)
+        this.shareFileInfo.title = '分享 ' + row.name
+        this.shareFileInfo.file_type = row.type === "file" ? "f" : "d"
+        this.shareModal = true
+      },
+      getDownloadLink(filename, tp) {
+        let params = {
+          'p':this.currentPath + '/' + filename,
+        }
+        this.$api.get('/api/files/share/get_download_link_info', params, r => {
+          console.log(r)
+          if (r.generated) {
+            //如果生成了下载链接
+            console.log('已经生成了链接')
+            this.shareFileInfo.shareLinkEnabled = true
+            this.shareFileInfo.shareLink = this.assembleShareLink(r.info.token, tp[0])
+            console.log("password:")
+            console.log(r.info.password)
+            if (r.info.password !== "") {
+              this.shareFileInfo.shareLinkPasswordEnabled = true
+              this.shareFileInfo.shareLinkPassword = r.info.password
+            }
+            if (r.info.expired !== "") {
+              this.shareFileInfo.shareLinkExpiredEnabled = true
+              this.shareFileInfo.shareLinkExpiredDate = r.info.expired
+            }
+          }
+        })
+      },
+      dealDownloadLink() {
+        console.log(this.shareFileInfo.title.substring(3))
+        if (this.shareFileInfo.shareLinkEnabled) {
+          //生成下载链接
+          let password = ''
+          if (this.shareFileInfo.shareLinkPasswordEnabled) {
+            password = this.shareFileInfo.shareLinkPassword
+          }
+          let expired = ''
+          if (this.shareFileInfo.shareLinkExpiredEnabled) {
+            expired = this.shareFileInfo.shareLinkExpiredDate
+          }
+          console.log('......')
+          console.log(expired)
+          this.generateDownloadLink(this.shareFileInfo.title.substring(3), password, expired)
+        }else {
+          //删除下载链接
+          console.log('nnnnn')
+        }
+      },
+      assembleShareLink(token, tp) {
+        if (tp === "f") {
+          return '/s/f/' + token
+        }
+        return '/s/d/' + token
+      },
+      generateDownloadLink(filename, password, expired) {
+        console.log("+++++")
+        console.log(expired)
+        let dt = new Date(expired)
+        let timestamp = Date.parse(dt)
+        let da = new Date(timestamp)
+        let month = da.getMonth() + 1
+        if (month < 10) {
+          month = '0' + month
+        }
+        let date = da.getDate()
+        if (date < 10) {
+          date = '0' + date
+        }
+        let expired_formatted = [da.getFullYear(), month, date].join('-')
+        console.log(expired_formatted)
+        let params = {
+          'path':this.currentPath + '/' + filename,
+          'password': password,
+          'expired': expired_formatted
+        }
+        this.$api.post('/api/files/share/generate_download_link', params, r => {
+          this.shareFileInfo.shareLink = this.assembleShareLink(r.token, this.shareFileInfo.file_type)
+        })
       },
       changeFile(event) {
         var file = event.target.files[0]
