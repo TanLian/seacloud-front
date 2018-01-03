@@ -285,7 +285,6 @@
         })
       },
       dealDownloadLink() {
-        console.log(this.shareFileInfo.title.substring(3))
         if (this.shareFileInfo.shareLinkEnabled) {
           //生成下载链接
           let password = ''
@@ -296,12 +295,18 @@
           if (this.shareFileInfo.shareLinkExpiredEnabled) {
             expired = this.shareFileInfo.shareLinkExpiredDate
           }
-          console.log('......')
-          console.log(expired)
           this.generateDownloadLink(this.shareFileInfo.title.substring(3), password, expired)
         }else {
           //删除下载链接
-          console.log('nnnnn')
+          let params = {
+            'p':this.currentPath + '/' + this.shareFileInfo.title.substring(3),
+          }
+          this.$api.post('/api/files/share/delete_download_link', params, r => {
+            this.shareFileInfo.shareLinkPasswordEnabled = false
+            this.shareFileInfo.shareLinkPassword = ''
+            this.shareFileInfo.shareLinkExpiredEnabled = false
+            this.shareFileInfo.shareLinkExpiredDate = ''
+          })
         }
       },
       assembleShareLink(token, tp) {
