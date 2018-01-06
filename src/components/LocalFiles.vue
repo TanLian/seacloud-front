@@ -109,10 +109,10 @@
               <p slot="content">
                 <Checkbox v-model="shareFileInfo.shareLinkEnabled" @on-change="dealDownloadLink">分享链接</Checkbox><br>
                 <Input v-show="shareFileInfo.shareLinkEnabled" v-model="shareFileInfo.shareLink" style="width: 300px"></Input><br>
-                <Checkbox v-model="shareFileInfo.shareLinkPasswordEnabled">密码保护</Checkbox><br>
-                <Input type="password" v-show="shareFileInfo.shareLinkPasswordEnabled" v-model="shareFileInfo.shareLinkPassword" style="width: 300px"></Input><br>
-                <Checkbox v-model="shareFileInfo.shareLinkExpiredEnabled">过期日期</Checkbox><br>
-                <DatePicker v-show="shareFileInfo.shareLinkExpiredEnabled" type="date" format="yyyy-MM-dd" v-model="shareFileInfo.shareLinkExpiredDate" placeholder="Select date" style="width: 200px"></DatePicker>
+                <Checkbox v-model="shareFileInfo.shareLinkPasswordEnabled" @on-change="switchDownloadPassword">密码保护</Checkbox><br>
+                <Input type="password" v-show="shareFileInfo.shareLinkPasswordEnabled" v-model="shareFileInfo.shareLinkPassword" @on-blur="changeDownloadPassword" style="width: 300px"></Input><br>
+                <Checkbox v-model="shareFileInfo.shareLinkExpiredEnabled" @on-change="switchDownloadExpired">过期日期</Checkbox><br>
+                <DatePicker v-show="shareFileInfo.shareLinkExpiredEnabled" type="date" format="yyyy-MM-dd" v-model="shareFileInfo.shareLinkExpiredDate" @on-change="changeDownloadExpired" placeholder="Select date" style="width: 200px"></DatePicker>
               </p>
           </Panel>
       </Collapse>
@@ -200,11 +200,9 @@
           //inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
           //inputErrorMessage: '邮箱格式不正确'
         }).then(({ value }) => {
-          console.log(value)
           let renameParams = {'parent_dir':this.currentPath, 'name':value}
           this.$api.post('/api/file/new', renameParams, r => {
             //this.renameFormVisible = false
-            console.log(r)
             this.refreshFileList()
           })
         }).catch(() => {});
@@ -216,19 +214,15 @@
           //inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
           //inputErrorMessage: '邮箱格式不正确'
         }).then(({ value }) => {
-          console.log(value)
           let renameParams = {'parent_dir':this.currentPath, 'name':value}
           this.$api.post('/api/dir/new', renameParams, r => {
             //this.renameFormVisible = false
-            console.log(r)
             this.refreshFileList()
           })
         }).catch(() => {});
       },
       handleCommand(command, comp) {
-        console.log(command)
         let filename = comp.$attrs.filename
-        console.log(filename)
         switch (command) {
           case 'rename':
               let obj = {'name':filename}
@@ -248,13 +242,10 @@
         let renameParams = {'parent_dir':this.currentPath, 'old_name':oldName, 'new_name':this.newFileName}
         this.$api.post('/api/file/rename', renameParams, r => {
           this.renameFormVisible = false
-          console.log(r)
           this.refreshFileList()
         })
       },
       handleShare(index, row) {
-        console.log(index)
-        console.log(row)
         this.getDownloadLink(row.name, row.type)
         this.shareFileInfo.title = '分享 ' + row.name
         this.shareFileInfo.file_type = row.type === "file" ? "f" : "d"
@@ -265,14 +256,10 @@
           'p':this.currentPath + '/' + filename,
         }
         this.$api.get('/api/files/share/get_download_link_info', params, r => {
-          console.log(r)
           if (r.generated) {
             //如果生成了下载链接
-            console.log('已经生成了链接')
             this.shareFileInfo.shareLinkEnabled = true
             this.shareFileInfo.shareLink = this.assembleShareLink(r.info.token, tp[0])
-            console.log("password:")
-            console.log(r.info.password)
             if (r.info.password !== "") {
               this.shareFileInfo.shareLinkPasswordEnabled = true
               this.shareFileInfo.shareLinkPassword = r.info.password
@@ -283,6 +270,71 @@
             }
           }
         })
+      },
+      changeDownloadPassword() {
+        if (this.shareFileInfo.shareLink) {
+          //编辑下载链接
+          let params = {
+            'path':this.currentPath + '/' + this.shareFileInfo.title.substring(3),
+            'password': this.shareFileInfo.shareLinkPassword
+          }
+          this.$api.post('/api/files/share/edit_download_link_password', params, r => {
+            this.shareFileInfo.shareLinkPassword = ''
+          })
+        }
+      },
+      switchDownloadPassword() {
+        if (this.shareFileInfo.shareLinkPasswordEnabled === false && this.shareFileInfo.shareLink){
+          let params = {
+            'path':this.currentPath + '/' + this.shareFileInfo.title.substring(3),
+            'password': ''
+          }
+          this.$api.post('/api/files/share/edit_download_link_password', params, r => {
+            this.shareFileInfo.shareLinkPassword = ''
+          })
+        }
+      },
+      changeDownloadExpired() {
+        if (this.shareFileInfo.shareLink) {
+          //编辑下载链接
+          let that = this
+          setTimeout(function(){
+            let expired_formatted = ''
+            let expired = that.shareFileInfo.shareLinkExpiredDate
+            if (expired) {
+              let dt = new Date(expired)
+              let timestamp = Date.parse(dt)
+              let da = new Date(timestamp)
+              let month = da.getMonth() + 1
+              if (month < 10) {
+                month = '0' + month
+              }
+              let date = da.getDate()
+              if (date < 10) {
+                date = '0' + date
+              }
+              expired_formatted = [da.getFullYear(), month, date].join('-')
+            }   
+            let params = {
+              'path':that.currentPath + '/' + that.shareFileInfo.title.substring(3),
+              'expired': expired_formatted
+            }
+            that.$api.post('/api/files/share/edit_download_link_expired', params, r => {
+              that.shareFileInfo.shareLinkExpiredDate = ''
+            })
+          }, 100)
+        }
+      },
+      switchDownloadExpired() {
+        if (this.shareFileInfo.shareLinkExpiredEnabled === false && this.shareFileInfo.shareLink){
+          let params = {
+            'path':this.currentPath + '/' + this.shareFileInfo.title.substring(3),
+            'expired': ''
+          }
+          this.$api.post('/api/files/share/edit_download_link_expired', params, r => {
+            this.shareFileInfo.shareLinkExpiredDate = ''
+          })
+        }
       },
       dealDownloadLink() {
         if (this.shareFileInfo.shareLinkEnabled) {
@@ -316,21 +368,21 @@
         return '/s/d/' + token
       },
       generateDownloadLink(filename, password, expired) {
-        console.log("+++++")
-        console.log(expired)
-        let dt = new Date(expired)
-        let timestamp = Date.parse(dt)
-        let da = new Date(timestamp)
-        let month = da.getMonth() + 1
-        if (month < 10) {
-          month = '0' + month
-        }
-        let date = da.getDate()
-        if (date < 10) {
-          date = '0' + date
-        }
-        let expired_formatted = [da.getFullYear(), month, date].join('-')
-        console.log(expired_formatted)
+        let expired_formatted = '';
+        if (expired) {
+          let dt = new Date(expired)
+          let timestamp = Date.parse(dt)
+          let da = new Date(timestamp)
+          let month = da.getMonth() + 1
+          if (month < 10) {
+            month = '0' + month
+          }
+          let date = da.getDate()
+          if (date < 10) {
+            date = '0' + date
+          }
+          expired_formatted = [da.getFullYear(), month, date].join('-')
+        }   
         let params = {
           'path':this.currentPath + '/' + filename,
           'password': password,
@@ -342,14 +394,11 @@
       },
       changeFile(event) {
         var file = event.target.files[0]
-        console.log(file)
 
         //获取上传链接
         this.$http.get("api/api/file/get_tmp_upload_link", {params:{"path":this.currentPath}}).then((response) => {
-          console.log(response)
           let data = response.data
           let link = data['link']
-          console.log(link)
           link = 'api' + link
 
           let formData = new FormData()
@@ -359,7 +408,6 @@
               "Content-Type": "multipart/form-data"
             }
           }).then((response) => {
-            console.log(response)
             let data = response.data
             let files = data.files
             for (let index = 0; index < files.length; index++) {
@@ -380,13 +428,9 @@
         })
       },
       handleDownload(index, row) {
-        console.log("下载文件")
-        console.log(row)
         this.$http.get('api/api/file/get_tmp_download_link', {params:{"path":this.currentPath + row.name}}).then((response) => {
-          console.log(response)
           let data = response.data
           let link = data['link']
-          console.log(link)
           link = 'api' + link
           window.location = link
         }, (response) => {
@@ -408,7 +452,6 @@
           type: 'warning'
         }).then(() => {
           this.$http.get('api/api/file/delete', {params:{"p":this.currentPath + '/' + filename}}).then((response) => {
-            console.log(response)
             this.filelist = this.filelist.filter(function(i){ return i.name != filename })
             this.$message({
               type: 'success',
@@ -425,7 +468,6 @@
         });
       },
       handleDelete(index, row) {
-        console.log(row)
         this.deleteConfirm(index, row)
       },
       showFileList() {
